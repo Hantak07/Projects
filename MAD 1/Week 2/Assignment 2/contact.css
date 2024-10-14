@@ -1,0 +1,23 @@
+body{
+    background-color: #fdfdbb;
+}
+
+a{
+    color: #ff0000;
+}
+
+footer{
+    margin-top:30%;
+    text-align: center;
+}
+
+.divtag{
+    height: 100%;
+    margin: 10px 10px 10px 10px;
+    border: 1px solid #fdfdbb;
+    padding: 5px 5px 5px 5px ;
+}
+
+span{
+    color: #0000ff;
+}

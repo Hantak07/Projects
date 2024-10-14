@@ -1,0 +1,25 @@
+body{
+    background-color: #fdfdbb;
+}
+
+a{
+    color: #ff0000;
+}
+
+h1{
+    margin: 10px 10px 10px 10px;
+    border: 1px solid #fdfdbb;
+    padding: 5px 5px 5px 5px ;
+}
+
+footer{
+    margin-top:19%;
+    text-align: center;
+}
+
+.divtag{
+    height: 100%;
+    margin: 10px 10px 10px 10px;
+    border: 1px solid #fdfdbb;
+    padding: 5px 5px 5px 5px ;
+}
