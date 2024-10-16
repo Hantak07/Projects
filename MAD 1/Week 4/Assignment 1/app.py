@@ -1,7 +1,5 @@
-from crypt import methods
-
 from flask import Flask
-
+from matplotlib import pyplot as plt
 app = Flask(__name__, template_folder='templates')
 
 @app.route("/index", methods=['POST'])
