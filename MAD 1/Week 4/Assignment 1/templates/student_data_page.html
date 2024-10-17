@@ -7,9 +7,28 @@
 </head>
 <body>
     <div><h1>Student Details</h1></div>
-
     <div>
-    </div>
+        <table border="2" id = "student-details-table">
+            <tr>
+                <th>Student ID</th>
+                <th>Course ID</th>
+                <th>Student Name</th>
+            </tr>
+            {%for student in marks %}
+                <tr>
+                    <td> {{student.0}} </td>
+                    <td> {{student.1}} </td>
+                    <td> {{student.2}} </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2" style="text-align:center"> Total Marks </td>
+                <td>{{ total }}</td>
+            </tr>
 
+        </table>
+    </div>
+    <br>
+    <div><a href='{{ url_for("output") }}'>Go Back</a></div>
 </body>
 </html>
