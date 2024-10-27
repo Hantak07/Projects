@@ -63,10 +63,18 @@ def add_student():
         else:
             return render_template_string("testing")
 
+@app.route("/student/<int:student_id>/update")
+def update_student(student_id):
+    return render_template_string("update_student page")
+
+@app.route("/student/<int:student_id>/delete")
+def delete_student(student_id):
+    return render_template_string("delete_student page")
+
 @app.route('/student/<int:student_id>', methods=['GET'])
 def show_student(student_id):
     if request.method == 'GET':
-        student = Student.query.filter_by(roll_number=student_id).first()
+        student = Student.query.filter_by(student_id=student_id).first()
         enrollments = Enrollments.query.filter_by(estudent_id=student_id)
         return render_template("student_page.html", student=student, enroll=enrollments)
 
