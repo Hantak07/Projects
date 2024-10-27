@@ -9,7 +9,6 @@ path = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, template_folder='./templates', static_folder='./static')
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(path, 'database.sqlite3')
 db = SQLAlchemy(app)
-# db.init_app(app)
 app.app_context().push()
 
 class Student(db.Model):
@@ -67,7 +66,9 @@ def add_student():
 @app.route('/student/<int:student_id>', methods=['GET'])
 def show_student(student_id):
     if request.method == 'GET':
-        return render_template("student_page.html")
+        student = Student.query.filter_by(roll_number=student_id).first()
+        enrollments = Enrollments.query.filter_by(estudent_id=student_id)
+        return render_template("student_page.html", student=student, enroll=enrollments)
 
 
 if __name__=='__main__':
