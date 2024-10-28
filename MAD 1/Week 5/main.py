@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string, url_for
 from flask import request
 from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
@@ -29,7 +29,7 @@ class Enrollments(db.Model):
     __tablename__ = 'enrollments'
     enrollment_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     estudent_id = db.Column(db.Integer, db.ForeignKey('student.student_id'), nullable=False)
-    ecourse = db.Column(db.Integer, db.ForeignKey('course.course_id'), nullable=False)
+    ecourse_id = db.Column(db.Integer, db.ForeignKey('course.course_id'), nullable=False)
 
 def check_roll_no_exists(roll_no: str) -> bool:
     result = Student.query.where(Student.roll_number == roll_no).one_or_none()
@@ -56,12 +56,25 @@ def add_student():
         first_name = request.form['f_name']
         last_name = request.form['l_name']
         checkbox = request.form.getlist("courses")
-        print(first_name, last_name, checkbox)
-
         if check_roll_no_exists(roll_number):
             return render_template("student_exist.html")
         else:
-            return render_template_string("testing")
+            course_dict = {
+                "course_1": "CSE01",
+                "course_2": "CSE02",
+                "course_3": "CSE03",
+                "course_4": "BST13",
+            }
+            student = Student(roll_number=roll_number, first_name=first_name, last_name=last_name)
+            print(student.student_id, student.roll_number, student.first_name, student.last_name)
+            db.session.add(student)
+            enrolls = [Enrollments(estudent_id=student.student_id, ecourse_id=course_dict[i]) for i in checkbox]
+            db.session.add_all(enrolls)
+            for i in enrolls:
+                print(i.enrollment_id, i.estudent_id, i.ecourse_id)
+
+            db.session.commit()
+            return url_for("index")
 
 @app.route("/student/<int:student_id>/update")
 def update_student(student_id):
@@ -76,6 +89,7 @@ def show_student(student_id):
     if request.method == 'GET':
         student = Student.query.filter_by(student_id=student_id).first()
         enrollments = Enrollments.query.filter_by(estudent_id=student_id)
+        print(enrollments)
         return render_template("student_page.html", student=student, enroll=enrollments)
 
 
