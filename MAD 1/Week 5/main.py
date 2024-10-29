@@ -1,4 +1,5 @@
 import os
+from sqlalchemy import text
 from flask import Flask, render_template_string, url_for
 from flask import request
 from flask import render_template
@@ -65,13 +66,32 @@ def add_student():
                 "course_3": "CSE03",
                 "course_4": "BST13",
             }
-            student = Student(roll_number=roll_number, first_name=first_name, last_name=last_name)
-            print(student.student_id, student.roll_number, student.first_name, student.last_name)
+
+            student_id = db.session.execute(text("SELECT seq FROM sqlite_sequence where name='student'")).scalar()
+            enrollment_id = db.session.execute(text("SELECT seq FROM sqlite_sequence where name='enrollments'")).scalar()
+
+            if student_id is None:
+                student_id = 1
+            else:
+                student_id = int(student_id) + 1
+
+            if enrollment_id is None:
+                enrollment_id = 1
+            else:
+                enrollment_id = int(enrollment_id) + 1
+
+            student = Student(student_id=student_id,
+                              roll_number=roll_number,
+                              first_name=first_name,
+                              last_name=last_name)
             db.session.add(student)
-            enrolls = [Enrollments(estudent_id=student.student_id, ecourse_id=course_dict[i]) for i in checkbox]
-            db.session.add_all(enrolls)
-            for i in enrolls:
-                print(i.enrollment_id, i.estudent_id, i.ecourse_id)
+
+            for i in checkbox:
+                enroll = Enrollments(enrollment_id=enrollment_id,
+                                     estudent_id=student_id,
+                                     ecourse_id=course_dict[i])
+                db.session.add(enroll)
+                enrollment_id += 1
 
             db.session.commit()
             return url_for("index")
@@ -88,9 +108,12 @@ def delete_student(student_id):
 def show_student(student_id):
     if request.method == 'GET':
         student = Student.query.filter_by(student_id=student_id).first()
-        enrollments = Enrollments.query.filter_by(estudent_id=student_id)
-        print(enrollments)
-        return render_template("student_page.html", student=student, enroll=enrollments)
+        student_enrollment = Enrollments.query.filter_by(estudent_id=student.student_id).all()
+        student_courses = []
+        for i in student_enrollment:
+            course_code = i.ecourse_id
+            student_courses.append(Course.query.filter_by(course_code=course_code).first())
+        return render_template("student_page.html", student=student, courses=student_courses)
 
 
 if __name__=='__main__':
